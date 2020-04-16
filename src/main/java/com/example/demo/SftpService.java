@@ -1,20 +1,23 @@
 package com.example.demo;
 
-import com.jcraft.jsch.*;
+import com.jcraft.jsch.ChannelSftp;
+import com.jcraft.jsch.JSch;
+import com.jcraft.jsch.JSchException;
+import com.jcraft.jsch.SftpException;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.FileUtils;
+import lombok.val;
 import org.springframework.integration.sftp.session.DefaultSftpSessionFactory;
-import org.springframework.integration.sftp.session.SftpSession;
 import org.springframework.stereotype.Service;
 
-import java.io.*;
-import java.time.LocalDateTime;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 
 @Service
 @Slf4j
 public class SftpService {
     public void uploadFile(String filename, InputStream inputStream){
-        SftpSession session = gimmeFactory().getSession();
+        val session = gimmeFactory().getSession();
 
         try {
 //            FileInputStream fileInputStream = new FileInputStream(new File(path));
@@ -28,15 +31,15 @@ public class SftpService {
     }
 
     public String download(String filename){
-        String absolutefilename = "upload/" + filename;
-        String tmpFile =  "tmp/" + filename;
-        JSch jsch = new JSch();
+        val absolutefilename = "upload/" + filename;
+        val tmpFile =  "tmp/" + filename;
+        val jsch = new JSch();
         try {
-            Session session = jsch.getSession("mike", "0.0.0.0", 22);
+            val session = jsch.getSession("mike", "0.0.0.0", 22);
             session.setPassword("password123");
             session.setConfig("StrictHostKeyChecking", "no");
             session.connect();
-            ChannelSftp sftp = (ChannelSftp)session.openChannel("sftp");
+            val sftp = (ChannelSftp)session.openChannel("sftp");
             sftp.connect();
             sftp.lcd("tmp");
             sftp.get(absolutefilename, filename);
@@ -50,7 +53,7 @@ public class SftpService {
     }
 
     private DefaultSftpSessionFactory gimmeFactory(){
-        DefaultSftpSessionFactory factory = new DefaultSftpSessionFactory();
+        val factory = new DefaultSftpSessionFactory();
         factory.setHost("0.0.0.0");
         factory.setPort(22);
         factory.setAllowUnknownKeys(true);

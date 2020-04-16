@@ -2,6 +2,7 @@ package com.example.demo;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -37,9 +38,9 @@ public class UploadDownloadController {
     @GetMapping("/download/{filename}")
     public Resource download(@PathVariable String filename){
         log.info("Download BEGIN");
-        String tmpFilename = sftpService.download(filename);
+        val tmpFilename = sftpService.download(filename);
         log.info(tmpFilename);
-        Path filepath = Path.of(tmpFilename);
+        val filepath = Path.of(tmpFilename);
         UrlResource resource = null;
         try {
             resource = new UrlResource(filepath.toUri());
